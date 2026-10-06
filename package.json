@@ -1,0 +1,9 @@
+{
+  "name": "memorial-familia",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "vite --host 0.0.0.0", "build": "vite build", "preview": "vite preview --host 0.0.0.0" },
+  "dependencies": { "@aws-sdk/client-s3": "^3.850.0", "@aws-sdk/s3-request-presigner": "^3.850.0", "@libsql/client": "^0.15.9", "cors": "^2.8.5", "dotenv": "^16.6.1", "express": "^5.1.0", "lucide-react": "^0.468.0", "multer": "^2.0.2", "react": "^19.1.1", "react-dom": "^19.1.1" },
+  "devDependencies": { "@vitejs/plugin-react": "^5.0.2", "vite": "^7.1.5", "concurrently": "^9.2.1" }
+}
