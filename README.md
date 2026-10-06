@@ -1,22 +1,26 @@
 # Memorial da Família
 
-Aplicação em React com API Express. O Turso guarda homenagens e mensagens; o Cloudflare R2 guarda fotos privadas. As imagens são exibidas por URLs assinadas de curta duração. Os segredos ficam somente no servidor, em `.env`.
+Memorial em React publicado como Cloudflare Worker. A API executa no Worker, usa Turso para as homenagens e Cloudinary para fotos. As assinaturas de upload são feitas no servidor; a chave secreta nunca vai para o navegador.
 
-## Preparação local
+## Publicação no Cloudflare Workers
 
-1. Instale uma versão LTS atual do Node.js.
-2. Crie um banco Turso e copie a URL e o token de autenticação de escrita para `.env`.
-3. Crie um bucket privado no Cloudflare R2 e uma chave de API com leitura e gravação no bucket. Preencha o ID da conta, ID da chave, segredo e nome do bucket em `.env`.
-4. Copie `.env.example` para `.env` e substitua todos os valores de exemplo. Nunca publique `.env` nem inclua tokens no código-fonte.
-5. No terminal, nesta pasta, execute `npm install` e `npm run dev`.
-6. Abra o endereço local mostrado pelo Vite. A API Express atende em `localhost:3001`; a aplicação cria as tabelas do Turso na primeira requisição.
+1. Use um token Turso novo, já que tokens compartilhados em conversas devem ser revogados.
+2. Em Workers & Pages, adicione `TURSO_AUTH_TOKEN` e `CLOUDINARY_API_SECRET` como **Secrets**. O `wrangler.toml` define a URL do Turso, o nome da nuvem e a chave pública do Cloudinary.
+3. Instale as dependências e publique com `npm install` e `npm run deploy`, autenticado na conta Cloudflare correta.
 
-O endpoint `/api/health` informa se o banco e o storage estão configurados. Fotos aceitas: JPEG, PNG, WebP ou GIF, no máximo 8 MB. A aplicação não inventa credenciais: mantenha o `.env.example` como modelo e forneça credenciais válidas no ambiente antes de usar os dados reais.
+A publicação compila o frontend para `dist/` e envia a aplicação Worker. `/api/*` é encaminhado ao Worker; os demais caminhos são servidos pelos assets estáticos.
 
-## Primeira homenagem
+## Desenvolvimento local
 
-Ao consultar um banco Turso vazio pela primeira vez, o servidor registra a homenagem de Benedito Antônio Carneiro Rodrigues (1966–2024). A fotografia original enviada pela família está incluída em `src/benedito-carneiro-rodrigues.jpg` para uso na versão inicial do memorial.
+O servidor Express continua disponível para `npm run dev`. Configure `.env` a partir de `.env.example` com o token Turso e o segredo do Cloudinary. Para experimentar o Worker, use `.dev.vars` com `TURSO_AUTH_TOKEN` e `CLOUDINARY_API_SECRET` e execute `npm run dev:worker`.
 
-## Publicação
+As tabelas são criadas na primeira chamada à API. Em banco sem homenagens, é registrada automaticamente a primeira homenagem de Benedito Antônio Carneiro Rodrigues. Fotos aceitas: JPEG, PNG, WebP ou GIF, até 8 MB. `GET /api/health` informa o estado das conexões.
 
-A interface estática pode ser compilada com `npm run build`. O servidor Express requer um runtime Node.js persistente e as mesmas variáveis de ambiente. Configure a plataforma escolhida para servir `dist/` pelo frontend e encaminhar `/api` para o servidor Express.
+## Rotas
+
+- `GET /api/members` e `POST /api/members`
+- `DELETE /api/members/:id`
+- `GET` e `POST /api/members/:id/condolences`
+- `DELETE /api/condolences/:id`
+- `GET /api/media/:key`
+- `GET /api/health`

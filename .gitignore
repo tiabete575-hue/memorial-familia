@@ -3,5 +3,7 @@ node_modules/
 .DS_Store
 dist/
 .pnpm-store/
+.wrangler/
+.dev.vars
 preview.html
 preview-styles.css
